@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.core.validators import MinValueValidator, MaxValueValidator
+import datetime
 # Create your models here.
 class Profesor(models.Model):
     id = models.AutoField(primary_key=True)
@@ -29,7 +30,7 @@ class Alumno(models.Model):
 
 class Asistencia(models.Model):
     id = models.AutoField(primary_key=True)
-    alumno_id = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
     fecha = models.DateField(null=False, blank=False)
     asiste = models.BooleanField(verbose_name='Asistío', default=True)
     Justificacion = models.CharField(max_length=200, blank=True, null=True) 
@@ -37,7 +38,7 @@ class Asistencia(models.Model):
     class Meta:
         verbose_name = 'Asistencia'
         verbose_name_plural = 'Asistencias'
-        ordering = ['fecha','alumno_id']
+        ordering = ['fecha','alumno']
         
 
     #def __str__(self):
@@ -53,19 +54,19 @@ class Evaluacion(models.Model):
         verbose_name_plural = 'Evaluaciones'
         ordering=['evaluacion']
         
-
     def __str__(self):
         return self.evaluacion
 
 class Nota(models.Model):
     id = models.AutoField(primary_key=True)
-    alumno_id = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-    evaluacion_id = models.ForeignKey(Evaluacion, on_delete=models.CASCADE)
-    nota = models.SmallIntegerField()
+    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    fecha = models.DateField(null=False, blank=False, default=datetime.date.today)
+    evaluacion = models.ForeignKey(Evaluacion, on_delete=models.CASCADE)
+    nota = models.SmallIntegerField(validators=[MaxValueValidator(20),MinValueValidator(0)])
 
     class Meta:
-        verbose_name = 'Nota'
-        verbose_name_plural = 'Notas'
+        verbose_name = 'Nota (1-20)'
+        verbose_name_plural = 'Notas (1-20)'
         
 
     #def __str__(self):
